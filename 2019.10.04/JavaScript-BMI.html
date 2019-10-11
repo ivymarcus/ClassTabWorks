@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BMI-JavaScript</title>
+
+    <script>
+        function Show(msg) {
+            document.getElementById('LabelResult').innerHTML += msg;
+        }
+
+        function Btn1_Click() {
+            var Height = document.getElementById('height').value;
+            var Weight = document.getElementById('weight').value;
+            // console.log(W);
+            var H = Height / 100;
+            var BMI = Weight / (H * H);
+            Show(BMI);
+        }
+    </script>
+</head>
+
+<body>
+
+
+    <label>身高:</label>
+    <input type="text" id="height" width="100px" placeholder="請輸入身高">
+
+    <label>體重:</label>
+    <input type="text" id="weight" width="100px" placeholder="請輸入體重">
+    <br />
+
+    <label id="LabelResult">結果:</label>
+    <br />
+    <input type="button" id="Btn-Calculation" name="Btn-Calculation" value="計算" onclick="Btn1_Click()">
+
+
+</body>
+
+</html>

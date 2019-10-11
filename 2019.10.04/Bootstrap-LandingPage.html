@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BootStrap-登錄頁面</title>
+
+    <!-- 引用bootstrap css -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <!-- navbar-dark 讓文字為白色(文字顏色) .bg-dark 負責背景顏色為暗底(背景顏色) sticky-top:固定選單在上面 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <!-- .navbar-brand 為您的公司，產品或專案名稱。 "這是 LOGO 文字或圖片"-->
+        <a class="navbar-brand" href="#">Logo</a>
+
+        <!-- .navbar-toggler 用於我們的折疊插件和其他 navigation toggling 行為。 -->
+        <!--  這是手機版時右上角呈現的選單按鈕, 注意:data-target表示按下這個按鈕時要控制展開收合的物件ID名稱  -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- 這是按鈕上呈現的icon圖案 -->
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- .collapse.navbar-collapse 用於外層中斷點群組和隱藏導覽列內容。 -->
+        <!-- navbar-collapse表示這個框架區塊是可收展開的, 注意:id名稱必須跟button中的data-target一樣 -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- .navbar-nav 提供完整的高和輕便的導航（包括對下拉清單的支持）。 -->
+
+            <!-- 這是一組靠左側的選單 -->
+            <!-- 加上 mr-auto,表示 margin-right:auto; 負責將剩下多出來的margin指定到左側選單組的右邊  -->
+            <ul class="navbar-nav mr-auto">
+                <!-- 如果要創建簡單的水平菜單，請將.nav類添加到<ul>元素中，然後.nav-item 為每個元素添加類，並將 類<li>添加.nav-link到其鏈接中 -->
+
+                <!-- active在視覺上設計底色不同,表示目前在這個位置,如果不需要則刪除  -->
+                <li class="nav-item active">
+                    <!-- span class="sr-only 這是專門為殘障人士瀏覽網頁設計的。 -->
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <!-- 下拉式選單 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropDropdwon" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+            </ul>
+            <!-- 這是一組靠右側的搜尋  -->
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+
+        </div>
+    </nav>
+
+
+    <!-- 圖片輪播元件的名稱為"carousel"，需要有滑動效果可以在最外面加個 "slide"，"data-ride"元素是bootstrap要求存在
+         的(預設是五秒變換一次)，"data-interval"的值是每隔1000毫秒，也就是1秒換一張圖片，此值太小元件會失真 -->
+    <div id="animal" class="carousel slide" data-ride="carousel" data-interval="3000" style="padding-left: 450px">
+        <!-- 這裡定義有幾張圖片，如果再多一張圖片就再下面多加一項，data-slide-to的值加一，
+            首張圖片也就是第0張圖片必須要有 class="active" 否則元件無法工作。
+            // 這是滑動圖片下面的小圖示// -->
+        <ul class="carousel-indicators">
+            <li data-target="#animal" data-slide-to="0" class="active"></li>
+            <li data-target="#animal" data-slide-to="1"></li>
+            <li data-target="#animal" data-slide-to="2"></li>
+        </ul>
+
+        <div class="carousel-inner">
+
+            <!--以下是各張的圖片的詳細編輯，"首張"圖片的class值必須為"item active"，餘下的皆為"item" -->
+            <div class="carousel-item active">
+                <img src="http://images5.fanpop.com/image/photos/31800000/cute-puppy-cute-puppies-31894882-205-245.jpg"
+                    alt="animal1" width="350" height="350">
+                <!-- <div class="carousel-caption">
+                        //圖片下的文字說明//
+                        <h3>狗狗</h3>
+                        <p>我叫阿比，今年3歲~~~，我很可愛吧!!</p>
+                    </div> -->
+            </div>
+
+            <div class="carousel-item">
+                <img src="http://www.quazero.com/uploads/allimg/150515/1-150515215434.jpg" alt="animal2" width="350"
+                    height="350">
+                <!-- <div class="carousel-caption">
+                        //圖片下的文字說明//
+                        <h3>貓咪</h3>
+                        <p>我叫姊姊，今年2歲~~~，我比哥哥更可愛八!!</p>
+                    </div> -->
+            </div>
+
+            <div class="carousel-item">
+                <img src="http://www.wall001.com/animal/rabbit/mxxx01/1da033025s.jpg" alt="animal3" width="350"
+                    height="350">
+                <!-- <div class="carousel-caption">
+                        圖片下的文字說明
+                        <h3>兔子</h3>
+                        <p>兔兔這麼可愛，怎麼可以吃兔兔.....</p>
+                    </div> -->
+            </div>
+        </div>
+
+        <!--這裡是元件中向左想右的兩個按鈕，固定存在的框架程式碼-->
+        <a class="carousel-control-prev" href="#animal" data-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#animal" data-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </a>
+    </div>
+
+    <br />
+    <div class="container">
+        <h3>動物內心獨白-愛的守則:</h3>
+        <p>有個人到日本去玩，在某家寵物店玻璃窗上，看到了一張「告示」，感動得熱淚盈眶，回國之後便將它在網上四處張貼。寵物店的玻璃窗上貼著「寵物給主人的十大叮嚀」：
+            一，把我帶回家之前，請記得我的壽命約有十到十五年，若你離棄我，會是我最大的痛苦。二，請對我有耐心，你要給我一些時間來了解我。
+            三，信任我──那對我十分重要。四，請別對我生氣太久，也別把我關起來當作懲罰。你明白嗎？你有你的工作、你的娛樂、你的朋友，而你是我的唯一。
+            五，請時常對我說話，縱使我不懂你說話的內容，但我會感覺到，你的聲音在陪伴我。六，你如何對待我，我將永記在心。
+            七，你打我時請記得，我擁有可以咬碎你手骨的尖銳牙齒，我只是選擇不做這樣的事。八，當你想責罵我不合作、固執或懶惰，請你想想，是否有什么正困擾著我，
+            或許我沒獲得我想要的食物、很久沒在溫暖的陽光下奔跑，或者我的心臟已經太弱或太老。九，在我年老時請好好照顧我，因為你也會變老。
+            十，當我要捱過生老病死最辛苦的歷程時，請千萬不要說：「我不忍心看，我不想在場。」只要有你和我在一起，所有的事都會變得容易接受。請你永遠不要忘記，我愛你。
+            看完，我也淚水盈眶。也許，不只所有的寵物店門口都該貼上這個告示。原文網址：<a
+                href="https://kknews.cc/pet/382qgl8.html">https://kknews.cc/pet/382qgl8.html</a>
+        </p>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="http://images5.fanpop.com/image/photos/31800000/cute-puppy-cute-puppies-31894882-205-245.jpg"
+                    class="rounded-circle mx-auto d-block align-baseline" width="300px" height="300px">
+                我叫阿比，今年3歲~~~，我很可愛吧!!
+            </div>
+            <div class="col-md-4">
+                <img src="http://www.quazero.com/uploads/allimg/150515/1-150515215434.jpg"
+                    class="rounded-circle mx-auto d-block align-baseline" width="300px" height="300px">
+                我叫姊姊，今年2歲~~~，我比哥哥更可愛八!!
+            </div>
+            <div class="col-md-4">
+                <img src="http://www.wall001.com/animal/rabbit/mxxx01/1da033025s.jpg"
+                    class="rounded-circle mx-auto d-block align-baseline" width="300px" height="300px">
+                兔兔這麼可愛，怎麼可以吃兔兔.....
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="container">
+        <h1>貓咪的尾巴語言:</h1> <hr />
+        <div class="row">
+            <div class="col-md-6">
+                <h2>炸毛：禦敵</h2>
+                當貓咪憤怒、受到驚嚇，或是感受到外在威脅時，會呈現全身毛髮豎立的狀態，尤其後背和尾巴特別明顯，這是為了讓自己的體型比實際上看起來更龐大，以達到威嚇敵人的目的。有些貓咪在家裡的吸塵器、洗衣機運作時，也會被巨大的聲響嚇到而炸毛。當看到貓咪的尾巴變成一根雞毛撢子時，可別再去刺激他們哦！
+            </div>
+            <div class="col-md-6">
+                <h2>夾尾：害怕</h2>
+                貓咪禦敵時，尾巴會呈現炸毛的狀態，但當遇到的是無法對抗的強大對手、無處可逃時，貓咪會放棄威嚇，夾著尾巴、縮小自己示弱。將尾巴藏在雙腿中間的動作，表示貓咪沒有安全感，意義相當於舉白旗投降，對外宣告「我不具威脅性，請勿再攻擊！」。有時貓咪被不當的方式抱起時，也會出現夾尾、用尾巴護住腹部的動作，這時就請換個讓貓咪有安全感的擁抱方式哦！
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h2>甩動：煩躁</h2>
+                狗狗的尾巴搖得越歡快，代表他們越開心，但貓咪卻正好相反！貓咪甩動尾巴，是在表達內心的焦慮不安，當貓咪的心情越煩躁，尾巴便會甩動得越快速、越用力，有時貓咪甚至會將尾巴如鞭子般重重地拍打在地上，以表示極度不悅。這個現象大多可以在替貓咪洗澡、剪指甲時看到，而若貓咪在玩耍到一半時也突然開始甩動尾巴，可能是表示不想玩了，建議讓貓咪獨處一下唷！
+            </div>
+            <div class="col-md-6">
+                <h2>顫抖：興奮</h2>
+                就像人類有時會因為狂喜而不由自主地顫抖一樣，當貓咪發現獵物或是超級喜歡的食物出現時，會因為太過興奮而忍不住讓尾巴高速顫抖，與此同時，還可以觀察到貓咪的瞳孔放到最大、鬍鬚向前豎等現象。下次當毛拔麻們看到家中的貓咪尾巴像裝了小馬達一樣時，可以留心一下四周，也許讓他們興奮的原因，正是一隻我們避之唯恐不及的大蟑螂！
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h2>高舉：愉悅</h2>
+                當貓咪高舉著尾巴，露出肛門及生殖器等私密的的部位，代表他們的心情非常自信和愉悅！這個行為源自於貓咪幼年時期，母貓會舔舐幼貓的肛門、尿道等處刺激排泄，雖然貓咪成年後不再需要這樣的幫助，但仍會在喜歡、信任的對象前降低防備心，做出這樣的動作。因此當毛拔麻們看到貓咪高舉著尾巴向自己走來，別懷疑，那正是貓咪無聲的告白！
+            </div>
+            <div class="col-md-6">
+                <h2>輕擺：回應</h2>
+                有許多毛拔麻都認為，貓咪不像狗狗會回應呼喚。事實上，雖然貓咪的確不像狗狗總是給予熱情的反應，但卻會透過尾巴輕輕搖擺的動作來回應毛拔麻：「我聽到了，有什麼事嗎？」。若毛拔麻的呼喚太頻繁，有時貓咪也會故意置之不理，但只要看到他們的尾巴輕輕搖動，就不用為愛的呼喚被無視而失望囉！
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h2>彎鉤：開心</h2>
+                貓咪的尾巴高舉代表著心情好，而尾巴高舉、末梢勾起則代表著心情更好！通常毛拔麻回家時，都可以看到貓咪尾巴豎直、尾端彎成一個鉤狀地來迎接。除此之外，當面對喜愛的玩具和零食，貓咪也會出現「開心尾巴」，甚至有時還會伴有輕微的顫抖，表達貓咪深深的喜歡！
+            </div>
+        </div>
+        <br />
+        <p style="font-size: 12px">資料來源:
+            <a href="https://www.thenewslens.com/article/125619">https://www.thenewslens.com/article/125619</a></p>
+    </div>
+
+
+
+
+</body>
+
+</html>
+
+
+<!-- 參考資料:
+    Navbar-主選單: 
+    https://bootstrap.hexschool.com/docs/4.0/components/navbar/ 
+    http://tsweb44.com/TS_Bootstrap4/i4.html
+    Bootstrap圖片輪播元件Carousel使用方法:
+    https://andy6804tw.github.io/2018/01/14/bootstrap-carousel/
+
+-->

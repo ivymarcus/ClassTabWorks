@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>倒數計時</title>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <style>
+        @font-face {
+            font-family: myfont;
+            src: url('Font/digital-7.ttf');
+        }
+    </style>
+
+    <script>
+        // isPause 是否暫停
+        
+        function btnStart() {
+            isPause = false;
+            // 若執行過後 出現"時間到" 先將這個為"空"
+            $('#end').text("");
+            // 把輸入的秒數，給變數's'
+            s = $('#timer').val();
+            CountdownTimer();
+
+        }
+
+        function btnPause() {
+            isPause = true;
+            CountdownTimer();
+        }
+
+        function btnGo() {
+            isPause = false;
+            CountdownTimer();
+        }
+
+
+        function CountdownTimer() {
+            // 當 isPause 為 true 則 return
+            if (isPause) {
+                return;
+            }
+            // isPause 為 false 則 顯示秒數/開始倒數計時
+            else {
+                $('#second').text(s);
+
+                // 如果秒數 不等於0時 則s-- 並在1秒後執行"function CountdownTimer"
+                if (s != 0) {
+                    s--;
+                    setTimeout(CountdownTimer, 1000);
+                }
+                // 當秒數 等於0時 則顯示"時間到" 並把isPause = true
+                else {
+                    $('#end').text("時間到");
+                    isPause = true;
+                }
+            }
+        }
+
+        //---------------???????????????????????????????????
+        // function CountdownTimer() {
+        //     //當 isPause 為 true 則 return 
+        //     if (isPause) {
+        //         return;
+        //     } 
+        //     // isPause 為 false 則 顯示秒數/開始倒數計時，並將 (秒數)s--
+        //     else {
+        //         $('#second').text(s);
+        //         s--;
+        //         // 如果 (秒數)s 等於0時， 先顯示 秒數等於0 再顯示"時間到" 並把isPause = true
+        //         if (s == 0) {
+        //             $('#second').text(s);
+        //             $('#end').text("時間到");
+        //             isPause = true;
+        //         } 
+        //         //如果 (秒數)s 不等於0時 在1秒後執行"function CountdownTimer"
+        //         else {
+        //             setTimeout(CountdownTimer, 1000);
+        //         }
+        //     }
+        // }
+        //---------------???????????????????????????????????
+
+        $(document).ready(function () {
+            $('#btnStart').click(btnStart);
+            $('#btnPause').click(btnPause);
+            $('#btnGo').click(btnGo);
+        });
+    </script>
+
+
+</head>
+
+<body>
+    <h1>倒數計時器:</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 mt-5 text-center">
+                <h5>請輸入秒數:</h5> <br />
+                <input class="form-control" id="timer">
+                <button class="btn btn-info mt-3" id="btnStart">開始</button>
+                <button class="btn btn-info mt-3 ml-5" id="btnPause">暫停</button>
+                <button class="btn btn-info mt-3 ml-5" id="btnGo">繼續</button>
+                <br />
+                <label style="font-family: myfont; ;font-size: 30px;" id="second">000</label>
+                <br />
+                <label id="end"></label>
+            </div>
+            <div class="col-md-3"></div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

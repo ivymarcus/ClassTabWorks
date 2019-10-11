@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>多國翻譯機</title>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        function btn_LiftTranslationRight() {
+            // 取得兩邊 選的語言
+            var left = $('#leftLanguage').val();
+            var right = $('#rightLanguage').val();
+            // alert(left);
+            // alert(right);
+            // alert(`&from=${left}&to=${right}`);
+
+
+            var source = $('#textleft').val();
+
+            $.ajax({
+                type: "post", //http verb
+                headers: {
+                    //http header
+                    "Ocp-Apim-Subscription-Key": "6003a591329241449262ad1da7d51e0c",
+                    "Content-Type": "application/json"
+                },
+                // from=???&to=??? => from=左邊的語言&(翻譯成)to=右邊的語言
+                url: `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${left}&to=${right}`,
+                data: JSON.stringify([{
+                    "Text": source
+                }]), //要翻譯的文字
+                dataType: "json",
+                success: function (response) {
+                    //呼叫遠端服務後的回傳結果
+                    $('#textright').val(response[0].translations[0].text);
+                }
+            })
+        }
+
+        function btn_RightTranslationLift() {
+            var right = $('#rightLanguage').val();
+            var left = $('#leftLanguage').val();
+
+            var source = $('#textright').val();
+
+            $.ajax({
+                type: "post", //http verb
+                headers: {
+                    //http header
+                    "Ocp-Apim-Subscription-Key": "6003a591329241449262ad1da7d51e0c",
+                    "Content-Type": "application/json"
+                },
+                // from=???&to=???
+                url: `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${right}&to=${left}`,
+                data: JSON.stringify([{
+                    "Text": source
+                }]), //要翻譯的文字
+                dataType: "json",
+                success: function (response) {
+                    //呼叫遠端服務後的回傳結果
+                    $('#textleft').val(response[0].translations[0].text);
+                }
+            })
+        }
+
+        function btn_Change() {
+            // 先取得 左邊、右邊 選擇的語言，兩個交換
+            var left = $('#leftLanguage').val();
+            var right = $('#rightLanguage').val();
+            var changeLanguage = left;
+            left = right;
+            right = changeLanguage;
+            // 將交換後 給值
+            $('#leftLanguage').val(left);
+            $('#rightLanguage').val(right);
+
+            // 將右邊的文字 給左邊
+            var rightText = $('#textright').val();
+            $('#textleft').val(rightText);
+
+            // 進行翻譯
+            var source = $('#textleft').val();
+
+            $.ajax({
+                type: "post", //http verb
+                headers: {
+                    //http header
+                    "Ocp-Apim-Subscription-Key": "6003a591329241449262ad1da7d51e0c",
+                    "Content-Type": "application/json"
+                },
+                // from=???&to=???
+                url: `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=${left}&to=${right}`,
+                data: JSON.stringify([{
+                    "Text": source
+                }]), //要翻譯的文字
+                dataType: "json",
+                success: function (response) {
+                    //呼叫遠端服務後的回傳結果
+                    $('#textright').val(response[0].translations[0].text);
+                }
+            })
+
+
+
+        }
+
+
+        $(document).ready(function () {
+            // $('#btnTranslation').click(function (e) {
+            //     btnTranslation();
+            // })
+            $('#btn_LiftTranslationRight').click(btn_LiftTranslationRight);
+            $('#btn_RightTranslationLift').click(btn_RightTranslationLift);
+            $('#btn_Change').click(btn_Change);
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card mt-3">
+                    <div class="card-header bg-primary text-white">原始/翻譯文字 <br /> <br />
+
+                        <select id="leftLanguage" class="form-control">
+                            <option value="zh-Hant" selected>繁體中文</option>
+                            <option value="en">英文</option>
+                            <option value="ja">日文</option>
+                            <option value="ko">韓文</option>
+                            <option value="th">泰文</option>
+                            <option value="el">希臘文</option>
+                            <option value="es">西班牙文</option>
+                            <option value="it">義大利文</option>
+                            <option value="tr">土耳其文</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="textleft" type="text" class="form-control" placeholder="請輸入要翻譯的文字or翻譯"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-2 text-center">
+                <br /><br />
+                <button class="btn btn-primary" id="btn_LiftTranslationRight">-></button>
+                <br /><br />
+                <!-- &#060; 為 "<" -->
+                <button class="btn btn-primary" id="btn_RightTranslationLift">&#060;-</button>
+                <br /><br />
+                <button class="btn btn-primary" id="btn_Change">&#060;-></button>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card mt-3">
+                    <div class="card-header bg-primary text-white">翻譯/原始文字 <br /><br />
+                        <select id="rightLanguage" class="form-control">
+                            <option value="zh-Hant">繁體中文</option>
+                            <option value="en" selected>英文</option>
+                            <option value="ja">日文</option>
+                            <option value="ko">韓文</option>
+                            <option value="th">泰文</option>
+                            <option value="el">希臘文</option>
+                            <option value="es">西班牙文</option>
+                            <option value="it">義大利文</option>
+                            <option value="tr">土耳其文</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="textright" type="text" class="form-control" placeholder="翻譯or請輸入要翻譯的文字"></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+</html>

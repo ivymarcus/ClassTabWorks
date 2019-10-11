@@ -1,0 +1,94 @@
+/* 1. 改變段落文字高度間距 + 連結顏色改變 */
+p {
+    font-size: 15px;
+  }
+  a:link {                  /* 未選取時 */
+    text-decoration: none;  /* 沒有底線 */
+    color: red;
+  }
+  a:visited {               /* 點選以後 */
+    color: orchid;
+  }
+  a:hover {                 /* 未點選 滑鼠移到連結位置時 */
+    color: blue;
+    text-decoration: underline;
+  }
+  a:active {                /* 點擊不放  */
+    color: green;
+  }
+  
+  #p1 {
+    font-size: 16px;
+    line-height: 2em;
+  }
+
+/* 2. 利用CSS將清單改成小圖示 */
+  #item1 li {
+    float:left;         /* 改成 "橫向水平" */
+    margin-left:40px;   /* 間距 40px */
+  }
+
+  #item2 {
+    list-style-image: url('https://img.icons8.com/android/24/000000/small-axe.png');  /* 改成小圖示 */
+  }
+/* 3. 試著讓四邊div框線不同顏色 */
+
+  #div3{
+      border: 2px red solid;    /* 最外面邊框: 粗細 紅色 實線 */
+  }
+  
+  #div2 {
+    /* 因被後覆蓋，所以不會顯示 */
+    border-width: 3px;            /* 內部邊框: 線條粗細 */
+    border-color: blue;         /* 內部邊框: 藍色 */
+    border-style: dotted;         /* 內部邊框: 點線 */
+  
+    /* border-left: 1px;             會被後面覆蓋，內部左邊框: 線條粗細 */
+    /* border-left: 2px dotted;      會被後面覆蓋，內部左邊框: 線條粗細 點線 */
+    border-left: medium dashed green;   /* 內部左邊框: '中'虛線 綠色 */
+    border-right: 5px dotted purple;    /* 內部右邊框:線條粗細 點線 紫色*/
+    border-top: 7px dotted gray;    /* 內部右邊框:線條粗細 點線 紫色*/
+    border-bottom: 3px dotted pink;    /* 內部右邊框:線條粗細 點線 紫色*/
+  }
+
+/* 4. 使用CSS讓div圓角有不同弧度 */
+  #div4 {                               /* 最外面邊框 */
+    border: 5px red solid;
+    border-radius:10px 20px 50px 80px;   /* 改變4個角的角度(圓弧) */
+  
+  }
+  
+  #div4-1 {
+    border-width: 3px;
+    border-color: blue;
+    border-style: dotted;
+    border-radius:80px 50px 30px 20px;   /* 改變4個角的角度(圓弧) */
+  
+    /* border-left: 1px;            會被後面覆蓋*/     
+    /* border-left: 2px dotted;     會被後面覆蓋*/
+    border-left: medium dashed green;     /* medium dashed: "中"虛線 */
+    border-bottom: 7px dotted purple;     /* 下面的線 */
+    border-top: 5px dashed orange;        /* 上面的線 */
+
+  }
+  
+/* 5. 靠右，文繞圖圓角框 */
+img {
+  width:300px;
+  border-radius: 5px;
+  float: left;
+  margin: 5px;
+  float:right;    /* 圖片靠右 */
+}
+
+#div5{
+  width: 70%; 
+  margin:2px auto;
+}
+
+/* 6. 建立包含卷軸的文字方塊 */
+#p6{
+  font-size: 20px;
+  line-height: 1.3em;
+}
+

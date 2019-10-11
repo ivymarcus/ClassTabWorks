@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BootStrap-BuildSchool</title>
+
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <!-- 引用bootstrap css -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .container {
+            margin-top: 15px;
+
+        }
+
+        .col-md-10 {
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 56px;
+
+        }
+
+        h4 {
+            font-size: 26px;
+            color: #9e9e9e;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            margin: 40px 0;
+            color: #373642;
+            font-size: 36px;
+        }
+
+        .card:hover {
+            box-shadow: 0 2px 12px 2px #99a6b14a;
+        }
+
+        .card-body h5 {
+            margin: 20px 0;
+            font-size: 18px;
+            line-height: 1.2;
+            color: #7d8b9A;
+        }
+
+        .card-body p {
+            padding: 20px 0;
+            font-size: 18px;
+            line-height: 1.2;
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 導覽列需要在外方使用 .navbar，並透過 .navbar-expand{-sm|-md|-lg|-xl} 給予響應式的折疊以及使用 color scheme class。
+         navbar-dark (文字顏色) bg-dark 負責背景顏色為暗底(背景顏色) sticky-top:固定選單在上面 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <!--這是 LOGO 文字或圖片"-->
+        <a class="navbar-brand" href="#">Build School</a>
+
+        <!-- .navbar-toggler 用於我們的折疊插件和其他 navigation toggling 行為。 -->
+        <!--  這是手機版時右上角呈現的選單按鈕, 注意:data-target表示按下這個按鈕時要控制展開收合的物件ID名稱  -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span> <!-- 這是按鈕上呈現的icon圖案 -->
+        </button>
+
+        <!-- .collapse.navbar-collapse 用於外層中斷點群組和隱藏導覽列內容。 -->
+        <!-- navbar-collapse表示這個框架區塊是可收展開的, 注意:id名稱必須跟button中的data-target一樣 -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- .navbar-nav 提供完整的高和輕便的導航（包括對下拉清單的支持）。 "這是一組靠右側的搜尋"  -->
+            <ul class="nav navbar-nav navbar-right">
+                <!-- 如果要創建簡單的水平菜單，請將.nav類添加到<ul>元素中，然後.nav-item 為每個元素添加類，並將 類<li>添加.nav-link到其鏈接中 -->
+                <!-- active在視覺上設計底色不同,表示目前在這個位置,如果不需要則刪除  -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Intro</a>
+                </li>
+
+                <!-- 下拉式選單 -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropDropdwon" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Services
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Link1</a>
+                        <a class="dropdown-item" href="#">Link2</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Pricing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Signup</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <h2>Build School 是軟體開發教育的先鋒，為學生打造更有競爭力的職涯</h2>
+                <h4>START CODING AND GET COACHED FROM MENTORS.</h4>
+                <a href="#" type="button" class="btn btn-success">Apply Now</a>
+                <h3>這裡沒有考試，只有滿滿的程式碼</h3>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Frondend</h5>
+                        <p class="card-text">HTML, CSS, and JS framework.</p>
+                    </div>
+                    <div class="card-footer text-muted">More Information</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Frondend</h5>
+                        <p class="card-text">HTML, CSS, and JS framework.</p>
+                    </div>
+                    <div class="card-footer text-muted">More Information</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Frondend</h5>
+                        <p class="card-text">HTML, CSS, and JS framework.</p>
+                    </div>
+                    <div class="card-footer text-muted">More Information</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="container" style="background-color: blue">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <img src="https://picsum.photos/seed/picsum/450/300" alt="" style="padding: 30% 0">
+            </div>
+
+            <div class="col-md-5">
+                <p style="font-size: 28px; padding: 20% 0; font-weight: bold; color: white">
+                    透過身經百戰的實務講師、各大企業的資深軟體工程師或CTO，帶領同學實作一個真正能運作的產品開發，
+                    解決真實世界的問題，透過專題過程中的實作，培養解決問題的能力，這裡不只是城市教學或教育訓練，
+                    學的不只是技能，而是 Learn how to learn，以因應變化多端的軟體開發技能，及自我尋找解答的能力。
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+
+        </div>
+
+    </div>
+
+    <div class="container" style="margin-top: 200px">
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4 text-center">
+                <h2>立刻加入</h2>
+                <p>welcome.</p>
+            </div>
+            <div class="col-md-4"></div>
+
+        </div>
+
+    </div>
+
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-1" style="padding: 0">
+                <span><i class="fa fa-envelope"></i></span>
+            </div>
+            <div class="col-md-7">
+                <input type="text" class="form-control" name="" id="" placeholder="Enter your email address">
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-1">
+                <span><i class="fa fa-lock"></i></span>
+            </div>
+            <div class="col-md-7">
+                <input type="text" class="form-control" name="" id="" placeholder="Create your password">
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-1">
+                <span><i class="fa fa-phone"></i></span>
+            </div>
+            <div class="col-md-7">
+                <input type="text" class="form-control" name="" id="" placeholder="Enter mobile number">
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <br />
+        <p>By joining, you agree to the Terms & Conditions and Privacy Policy.</p>
+        <br />
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <a href="#" type="button" class="btn btn-info form-control">Sign Up</a>
+            </div>
+            <div class="col-md-2"></div>
+
+        </div>
+
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer font-small indigo navbar-dark bg-dark">
+
+        <!-- Footer Links -->
+        <div class="container text-center text-md-left">
+
+            <!-- Grid row -->
+            <div class="row" style="padding-top: 20px;">
+                <!-- Grid column -->
+                <div class="col-md-1">
+                    <a href="#">Service</a>
+                </div>
+                <div class="col-md-1">
+                    <a href="#">About</a>
+                </div>
+                <div class="col-md-1">
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="col-md-1">
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+            <!-- Grid row -->
+            <div class="row" style="padding-top: 50px; padding-bottom: 20px;">
+                    <!-- Grid column -->
+                    <div class="col-md-2">
+                        <a href="#">Build School</a>
+                    </div>
+                    <div class="col-md-8"></div>
+                    <div class="col-md-1">
+                        <a href="#">Pricing</a>
+                    </div>
+                    <div class="col-md-1">
+                        <a href="#">About</a>
+                    </div>
+                </div>
+
+        </div>
+        <!-- Footer Links -->
+
+
+    </footer>
+    <!-- Footer -->
+
+</body>
+
+</html>
