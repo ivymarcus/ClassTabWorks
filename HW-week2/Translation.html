@@ -21,6 +21,9 @@
             // alert(right);
             // alert(`&from=${left}&to=${right}`);
 
+            // .lastQuery 是自己創的屬性: 讀取'textleft'顯示框的文字(最後一次輸入的文字)
+            localStorage.lastQuery = $('#textleft').val();
+
 
             var source = $('#textleft').val();
 
@@ -107,15 +110,20 @@
                 }
             })
 
-
-
         }
+
+        // localStorage.setItem('LeftText', "$('#textleft')");
+        $('#textleft').val(localStorage.getItem('LeftText'));
 
 
         $(document).ready(function () {
             // $('#btnTranslation').click(function (e) {
             //     btnTranslation();
             // })
+
+            //  在 JQready時，在'textleft'顯示框上顯示 上次最後輸入的文字
+            $('#textleft').val(localStorage.lastQuery);
+
             $('#btn_LiftTranslationRight').click(btn_LiftTranslationRight);
             $('#btn_RightTranslationLift').click(btn_RightTranslationLift);
             $('#btn_Change').click(btn_Change);
@@ -174,7 +182,8 @@
                         </select>
                     </div>
                     <div class="card-body">
-                        <textarea id="textright" type="text" class="form-control" placeholder="翻譯or請輸入要翻譯的文字"></textarea>
+                        <textarea id="textright" type="text" class="form-control"
+                            placeholder="翻譯or請輸入要翻譯的文字"></textarea>
                     </div>
                 </div>
             </div>
