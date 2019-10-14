@@ -70,8 +70,8 @@
         function init_hover() {
             $('#ImgHover img').hover(function () {
                 // over 滑鼠移到圖片
-                $(this).css("cursor", "pointer");
-                $(this).css("transform", "scale(1.1)").css("transition", "0.1s")
+                $(this).css("cursor", "pointer");   // .myMOUSE{ cursor: pointer;} 改變滑鼠的鼠標
+                $(this).css("transform", "scale(1.1)").css("transition", "0.1s")    // transform: scale(1.1); 放大1.1倍，transition-delay: 0.1s; 用於定義延遲過渡開始的時間長度。
             }, function () {
                 // out  滑鼠離開圖片
                 $(this).css("transform", "scale(1)").css("transition", "0.1s")
