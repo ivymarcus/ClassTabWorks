@@ -10,7 +10,7 @@
   <meta name="author" content="">
   <!--<link rel="icon" href="../../favicon.ico">-->
 
-  <title>猜數字-Guess number</title>
+  <title>Guess number</title>
 
 
 
@@ -95,8 +95,8 @@
             <div class="col-md-12">
               <div class="btn-group btn-group-justified">
                 <a id="start" type="button" class="btn btn-default">開始</a>
-                <a id="restart" type="button" class="btn btn-default" disabled="true">放棄重來</a>
-                <a id="cheat" type="button" class="btn btn-default" disabled="true">看答案</a>
+                <a id="restart" type="button" class="btn btn-default">放棄重來</a>
+                <a id="cheat" type="button" class="btn btn-default">看答案</a>
               </div>
               <br>
               <!-- ?A?B -->
@@ -136,7 +136,7 @@
                 <span class="input-group-addon" id="sizing-addon1">猜答案</span>
                 <input id="userGuess" type="text" name="" class="form-control" value="" required="required">
                 <span class="input-group-btn">
-                  <a id="guess" type="button" class="btn btn-default" disabled="true">猜!</a>
+                  <a id="guess" type="button" class="btn btn-default">猜!</a>
                 </span>
               </div>
             </div>
@@ -163,6 +163,18 @@
 
     // 開始(產生數字)
     function start() {
+      // 設定 按鈕的 disabled 為 true/false
+      $('#start').attr('disabled', true);
+      $('#cheat').attr('disabled', false);
+      $('#restart').attr('disabled', false);
+      $('#guess').attr('disabled', false);
+      // 設定 (標籤是'a')按鈕的css為 "不能按"/"可以按"
+      $('#start').css('pointer-events', 'none');
+      $('#cheat').css('pointer-events', 'auto');
+      $('#restart').css('pointer-events', 'auto');
+      $('#guess').css('pointer-events', 'auto');
+
+      // 產生數字
       var n1 = Math.floor(Math.random() * 10);
       while (true) {
         if (n1 === 0) {
@@ -205,11 +217,7 @@
       AnserArrayNum = [n1, n2, n3, n4];
       //alert(AnserArrayNum);
 
-      //按鈕開啟/關閉
-      $('#start').attr('disabled', true);
-      $('#cheat').attr('disabled', false);
-      $('#restart').attr('disabled', false);
-      $('#guess').attr('disabled', false);
+
 
       // 清空
       $('#guessResults').text("");
@@ -223,10 +231,16 @@
 
     // 放棄重來
     function restart() {
+      // 設定 按鈕的 disabled 為 true/false
       $('#start').attr('disabled', false);
       $('#cheat').attr('disabled', true);
       $('#restart').attr('disabled', true);
       $('#guess').attr('disabled', true);
+      // 設定 (標籤是'a')按鈕的css為 "不能按"/"可以按"
+      $('#start').css('pointer-events', 'auto');
+      $('#cheat').css('pointer-events', 'none');
+      $('#restart').css('pointer-events', 'none');
+      $('#guess').css('pointer-events', 'none');
 
       // 清空
       $('#guessResults').text("");
@@ -251,7 +265,7 @@
         x = x / 10;
       }
       //alert(arrayguessnum);
-      
+
       //判斷 幾A幾B
       let A = 0;
       let B = 0;
@@ -294,14 +308,26 @@
 
 
     $(document).ready(function () {
+      // 設定 按鈕的 disabled 為 true/false
+      $('#start').attr('disabled', false);
+      $('#cheat').attr('disabled', true);
+      $('#restart').attr('disabled', true);
+      $('#guess').attr('disabled', true);
+      // 設定 (標籤是'a')按鈕的css為 "不能按"/"可以按"
+      $('#start').css('pointer-events', 'auto');
+      $('#cheat').css('pointer-events', 'none');
+      $('#restart').css('pointer-events', 'none');
+      $('#guess').css('pointer-events', 'none');
+
+      // 當點擊時
       $('#start').click(start);
       $('#restart').click(restart);
       $('#cheat').click(cheat);
       $('#guess').click(guess);
 
       // 使用 Enter替代"猜"的按鈕
-      document.getElementById("userGuess").onkeyup = function(event) {
-        if(event.keyCode == 13) {
+      document.getElementById("userGuess").onkeyup = function (event) {
+        if (event.keyCode == 13) {
           guess();
         }
       }
