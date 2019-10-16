@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<!-- 用到的東西 DataTables.net 、 LocalStorage 、 jQueryTagsInput-->
+<!-- 參考: https://github.com/xoxco/jQuery-Tags-Input -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>個人通訊錄加上Tag</title>
+
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- DataTables.net / https://datatables.net/ -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js">
+    </script>
+
+    <!-- https://cdnjs.com/libraries/jquery-tagsinput -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.6/jquery.tagsinput.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.6/jquery.tagsinput.min.js"></script>
+
+    <script>
+        // 預設資料 (Tag陣列結構)
+        var dat = [
+            ['Eric(預設資料)', '0912345678', '1980/1/1', 'eric@gmail.com', '台北市光復南路179號13樓', ['朋友','客戶']]
+        ];
+
+        // 更新資料
+        function refreshData() {
+            DataTable.clear();
+            DataTable.rows.add(dat);
+            DataTable.draw();
+        }
+
+        // 儲存資料
+        function SaveData() {
+            // 序列化，轉成字串格式，保存起來 (若不保存，下一次執行時會被清空，只有預設資料dat)
+            var str = JSON.stringify(dat);
+            localStorage.setItem('AddressBook', str);
+        }
+        // 載入資料
+        function LoadData() {
+            if (localStorage.getItem('AddressBook') != null) {
+                var str = localStorage.getItem('AddressBook');
+                // 取回資料(反序列化，json的格式)
+                dat = JSON.parse(str);
+            }
+            // 更新資料(若第一次執行，則只有"預設資料"dat)
+            refreshData();
+        }
+
+        // 開啟"新增"視窗
+        function BtnShowNewDataWindow() {
+            $('#ModalShowNewDataWindow').modal();
+        }
+
+        // 新增 -> 新增資料
+        function ModalBtnAddData() {
+            // 一個"item 陣列"儲存 資料
+            var item = [
+                $('#filed_Name').val(),
+                $('#filed_Birthday').val(),
+                $('#filed_Tel').val(),
+                $('#filed_Email').val(),
+                $('#filed_Address').val(),
+                //Tag標籤
+                $('#filed_tag').val(),
+            ]
+
+            // 新增元素， 將新增資料的'item' push給'dat'陣列
+            dat.push(item);
+
+            // 儲存資料
+            SaveData();
+
+            // 清空資料
+            $('#filed_Name').val("");
+            $('#filed_Birthday').val("");
+            $('#filed_Tel').val("");
+            $('#filed_Email').val("");
+            $('#filed_Address').val("");
+            /* importTags(): 可以重置標籤列表，例如 $('#tags').importTags('');
+                             也可以函數導入標籤列表，例如 $('#tags').importTags('foo,bar,baz'); */
+            //Tag標籤 "清空"
+            $('#filed_tag').importTags("");
+            
+
+            // 載入資料
+            LoadData();
+
+        }
+
+        // 開啟"匯入"視窗
+        function BtnShowImport() {
+            // 先清空"文字框"的內容，將"文字框、按鈕"設置為 可使用
+            $('#field_DataJSON').val("");
+            $('#field_DataJSON').attr("readonly", false);
+            $('#BtnImport').removeAttr("disabled");
+            // 開啟modal
+            $('#ModalShowImportAndExport').modal();
+
+        }
+
+        // 匯入 -> 匯入資料
+        function BtnImport() {
+            dat = JSON.parse($('#field_DataJSON').val());
+            refreshData();
+        }
+
+        // 開啟"匯出"視窗
+        function BtnShowExport() {
+            // 取得當前資料的 JSON
+            var str = JSON.stringify(dat);
+            // 將JSON資料 放入文字框
+            $('#field_DataJSON').val(str);
+            //設定顯示框、按鈕 為"唯讀",
+            $('#field_DataJSON').attr("readonly", true);
+            $('#BtnImport').attr("disabled", true);
+            // 開啟modal
+            $('#ModalShowImportAndExport').modal();
+        }
+
+        // 表格(tr) 資料 -> 儲存修改資料
+        function ModalBtnUpdate() {
+            var NewItem = [
+                $('#Modify_Name').val(),
+                $('#Modify_Birthday').val(),
+                $('#Modify_Tel').val(),
+                $('#Modify_Email').val(),
+                $('#Modify_Address').val(),
+                // 修改標籤內容
+                $('#Modify_Tag').val(),
+                
+            ];
+
+            var n = dat.indexOf(CurrentEditItem);
+            dat[n] = NewItem;
+            refreshData();
+        }
+
+        // 表格(tr) 資料 -> 刪除資料
+        function ModalBtnDelete() {
+            var n = dat.indexOf(CurrentEditItem);
+            // 刪除資料
+            dat.splice(n, 1);
+            refreshData();
+        }
+
+        // 保存
+        function BtnSave() {
+            SaveData();
+            alert("保存成功");
+        }
+
+        // 初始化
+        $(document).ready(function () {
+            // 預設資料
+            DataTable = $('#AddressBookTable').DataTable({
+                data: dat
+            })
+            // 載入資料(將之前增加/修改的資料 載入)
+            LoadData();
+
+            // 設定TagsInput
+            $('#filed_tag').tagsInput();
+            $('#Modify_Tag').tagsInput();
+
+
+            // 開啟"新增"視窗
+            $('#BtnShowNewDataWindow').click(BtnShowNewDataWindow);
+            // 新增 -> 新增資料
+            $('#ModalBtnAddData').click(ModalBtnAddData);
+
+            // 開啟"匯入/匯出"視窗
+            $('#BtnShowImport').click(BtnShowImport);
+            $('#BtnShowExport').click(BtnShowExport);
+            // 匯入 -> 匯入資料
+            $('#BtnImport').click(BtnImport);
+
+
+            // 點選表格(tr) 資料
+            // 參考: https://datatables.net/examples/advanced_init/events_live.html
+            $('#AddressBookTable tbody').on('click', 'tr', function () {
+                // 取得當前點選的資料 "CurrentEditItem"是一個陣列型別
+                CurrentEditItem = DataTable.row(this).data();
+                // 顯示當前點選的資料
+                // alert(CurrentEditItem);
+
+                // 開啟"修改/刪除"視窗，並將資料放入，是陣列格式
+                $('#ModalShowModifyAndDelete').modal();
+                $('#Modify_Name').val(CurrentEditItem[0]);
+                $('#Modify_Birthday').val(CurrentEditItem[1]);
+                $('#Modify_Tel').val(CurrentEditItem[2]);
+                $('#Modify_Email').val(CurrentEditItem[3]);
+                $('#Modify_Address').val(CurrentEditItem[4]);
+                // 修改標籤內容
+                $('#Modify_Tag').importTags(CurrentEditItem[5]);
+                // $('#Modify_Tag').tagsInput(CurrentEditItem[5]);
+
+            });
+
+            // 表格(tr) 資料 -> 儲存修改資料
+            $('#ModalBtnUpdate').click(ModalBtnUpdate);
+            // 表格(tr) 資料 -> 刪除資料
+            $('#ModalBtnDelete').click(ModalBtnDelete);
+
+            //保存
+            $('#BtnSave').click(BtnSave);
+
+        });
+    </script>
+
+</head>
+
+<body>
+    <!-- 主選單 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top mb-5">
+        <a class="navbar-brand" href="#">個人通訊錄</a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="nav navbar-nav navbar-right">
+
+                <button id="BtnShowNewDataWindow" class="btn btn-primary mr-5">新增</button>
+                <button id="BtnShowImport" class="btn btn-danger mr-3">匯入</button>
+                <button id="BtnShowExport" class="btn btn-danger mr-3">匯出</button>
+
+                <form class="form-inline">
+                    <input type="text" class="form-control" placeholder="輸入搜尋文字">
+                    <button class="btn btn-success ml-2" type="submit">搜尋</button>
+                </form>
+
+
+
+            </ul>
+        </div>
+    </nav>
+
+    <!-- table內容 -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <table id="AddressBookTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>姓名</th>
+                            <th>生日</th>
+                            <th>電話</th>
+                            <th>e-mail</th>
+                            <th>地址</th>
+                            <th>Tag分類</th>
+                        </tr>
+                    </thead>
+
+                    <!-- <tbody> </tbody> 可以不寫-->
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <button id="BtnSave" class="btn btn-primary">保存</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal-dialog 顯示框 fade淡出淡入-->
+    <!-- 顯示"新增"的Modal -->
+    <div class="modal fade" id="ModalShowNewDataWindow">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">新增資料</h4>
+                    <button type="submit" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>姓名:</label>
+                    <input type="text" id="filed_Name" class="form-control" placeholder="請輸入姓名">
+                    <label>生日:</label>
+                    <input type="text" id="filed_Birthday" class="form-control" placeholder="ex.2019/10/14">
+                    <label>電話:</label>
+                    <input type="text" id="filed_Tel" class="form-control" placeholder="ex.09xx-xxx-xxx">
+                    <label>e-mail:</label>
+                    <input type="text" id="filed_Email" class="form-control" placeholder="請輸入e-mail">
+                    <label>地址:</label>
+                    <input type="text" id="filed_Address" class="form-control" placeholder="請輸入地址">
+                    <label>Tag:</label>
+                    <input type="text" id="filed_tag" class="form-control" placeholder="請輸入Tag">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" id="ModalBtnAddData" class="btn btn-info">新增資料</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">關閉</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 顯示"匯入/匯出資料"的Modal -->
+    <div class="modal fade" id="ModalShowImportAndExport">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">匯入/匯出資料</h4>
+                    <button type="submit" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <textarea id="field_DataJSON" class="form-control" cols="60" rows="10"></textarea>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button id="BtnImport" type="button" class="btn btn-primary" data-dismiss="modal">匯入資料</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">關閉</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 顯示"修改/刪除"的Modal -->
+    <div class="modal fade" id="ModalShowModifyAndDelete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">修改/刪除資料</h4>
+                    <button type="submit" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>姓名:</label>
+                    <input type="text" id="Modify_Name" class="form-control" placeholder="請輸入姓名">
+                    <label>生日:</label>
+                    <input type="text" id="Modify_Birthday" class="form-control" placeholder="ex.2019/10/14">
+                    <label>電話:</label>
+                    <input type="text" id="Modify_Tel" class="form-control" placeholder="ex.09xx-xxx-xxx">
+                    <label>e-mail:</label>
+                    <input type="text" id="Modify_Email" class="form-control" placeholder="請輸入e-mail">
+                    <label>地址:</label>
+                    <input type="text" id="Modify_Address" class="form-control" placeholder="請輸入地址">
+                    <label>Tag:</label>
+                    <input type="text" id="Modify_Tag" class="form-control" placeholder="請輸入Tag">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" id="ModalBtnUpdate" class="btn btn-info" data-dismiss="modal" >修改資料</button>
+                    <button type="button" id="ModalBtnDelete" class="btn btn-danger" data-dismiss="modal">刪除資料</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</body>
+
+</html>
