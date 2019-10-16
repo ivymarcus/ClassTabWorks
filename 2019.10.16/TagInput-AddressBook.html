@@ -29,7 +29,7 @@
     <script>
         // 預設資料 (Tag陣列結構)
         var dat = [
-            ['Eric(預設資料)', '0912345678', '1980/1/1', 'eric@gmail.com', '台北市光復南路179號13樓', ['朋友','客戶']]
+            ['Eric(預設資料)', '0912345678', '1980/1/1', 'eric@gmail.com', '台北市光復南路179號13樓', ['預設資料','客戶']]
         ];
 
         // 更新資料
@@ -43,12 +43,12 @@
         function SaveData() {
             // 序列化，轉成字串格式，保存起來 (若不保存，下一次執行時會被清空，只有預設資料dat)
             var str = JSON.stringify(dat);
-            localStorage.setItem('AddressBook', str);
+            localStorage.setItem('AddressBookTags', str);
         }
         // 載入資料
         function LoadData() {
-            if (localStorage.getItem('AddressBook') != null) {
-                var str = localStorage.getItem('AddressBook');
+            if (localStorage.getItem('AddressBookTags') != null) {
+                var str = localStorage.getItem('AddressBookTags');
                 // 取回資料(反序列化，json的格式)
                 dat = JSON.parse(str);
             }
