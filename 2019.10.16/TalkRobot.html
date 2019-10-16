@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<!-- 使用到 QnA Maker -->
+<!-- QnA 資料網址: https://li.oit.edu.tw/files/14-1006-8074,r452-1.php?Lang=zh-tw -->
+<!-- 之後會刪掉，因為要收費 -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>對談機器人</title>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        function ButtonSend() {
+
+            var html = $('#TalkContainer').html();
+            var UserSay = $('#inputText').val();
+            // 清空
+            $('#inputText').val("");
+            // 顯示"用戶"的內容
+            $('#TalkContainer').html(html + '<br /><br /><span style= "color: red">用戶:</span>' + UserSay);
+            //scroll to bottom / 捲動到最後一個
+            $('#TalkContainer').scrollTop($('#TalkContainer')[0].scrollHeight);
+
+            // 一個值 和 一個function
+            GetAnswer(UserSay, function (response) {
+                // 可以到"開發人員工具"看，response是一個陣列。
+                // response.answers[0].answer是回答的答案
+                let html = $('#TalkContainer').html();
+                $('#TalkContainer').html(html + '<br /><br /><span style= "color: blue">客服:</span>' + response.answers[0].answer);
+                //scroll to bottom / 捲動
+                $('#TalkContainer').scrollTop($('#TalkContainer')[0].scrollHeight);
+
+            });
+            
+        }
+
+        // 呼叫API對談機器人
+        // whenSuccess:傳入function作為參數
+        function GetAnswer(UserSay, whenSuccess) {
+            // 呼叫API對談機器人
+            $.ajax({
+                type: "post", //http verb
+                //http header
+                headers: {
+                    // Key-之後會刪掉，因為要收費
+                    "Authorization": "EndpointKey 00e3aba8-ebf3-413a-8de4-43e63b024ec6",
+                    "Content-Type": "application/json"
+                },
+                // 
+                url: "https://20191016test.azurewebsites.net/qnamaker/knowledgebases/ab5cd554-3c2a-4a75-9930-63967128d41d/generateAnswer",
+                data: JSON.stringify({
+                    //"Text": source
+                    "question": UserSay
+                }),
+                dataType: "json",
+                // 如果成功
+                success: whenSuccess,
+                /* 原本寫在裡面
+                function (response) {
+                    let html = $('#TalkContainer').html();
+                    $('#TalkContainer').html(html + '<br /><br />客服:' + response.answers[0].answer);
+                    //scroll to bottom / 捲動
+                    $('#TalkContainer').scrollTop($('#TalkContainer')[0].scrollHeight);
+                    
+                }*/
+            })
+        }
+
+        $(document).ready(function () {
+            $('#ButtonSend').click(ButtonSend);
+
+            // 按下Enter可發送
+            $('#inputText').keypress(function (e) {
+                if (e.keyCode == 13) {
+                    //enter
+                    ButtonSend();
+                    return false;
+                }
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <div class="row" style="margin: 10px">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <!-- 卡片  -->
+            <div class="card">
+                <!-- 卡片標題 -->
+                <span class="card-header bg-primary" style="color:white">
+                    對談機器人
+                </span>
+                <!-- 卡片內容 -->
+                <div class="card-body">
+                    <!-- 對談區 -->
+                    <div id="TalkContainer" style="overflow: auto; height: 300px;">
+                    </div>
+                </div>
+            </div>
+            <form class="form-inline">
+                <input id="inputText" class="form-control" style="width:88%">
+                <button type="button" id="ButtonSend" class="btn btn-primary">送出</button>
+            </form>
+        </div>
+        <div class="col-2"></div>
+
+</body>
+
+</html>
