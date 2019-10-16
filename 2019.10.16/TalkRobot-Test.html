@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>(測試)對談機器人</title>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        function btn_LiftTranslationRight() {
+            // 取得兩邊 選的語言
+            var left = $('#leftLanguage').val();
+            var right = $('#rightLanguage').val();
+            // alert(left);
+            // alert(right);
+            // alert(`&from=${left}&to=${right}`);
+
+
+            var source = $('#textleft').val();
+
+            $.ajax({
+                type: "post", //http verb
+                headers: {
+                    //http header
+                    // Key-之後會刪掉，因為要收費
+                    "Authorization": "EndpointKey 00e3aba8-ebf3-413a-8de4-43e63b024ec6",
+                    "Content-Type": "application/json"
+                },
+                // 
+                url: "https://20191016test.azurewebsites.net/qnamaker/knowledgebases/ab5cd554-3c2a-4a75-9930-63967128d41d/generateAnswer",
+                data: JSON.stringify({
+                    //"Text": source
+                    "question": source
+                    
+                }), //要翻譯的文字
+                dataType: "json",
+                success: function (response) {
+                    //呼叫遠端服務後的回傳結果
+                    // $('#textright').val(response[0].translations[0].text);
+                    $('#textright').val(response.answers[0].answer);
+                }
+            })
+        }
+
+        $(document).ready(function () {
+            // $('#btnTranslation').click(function (e) {
+            //     btnTranslation();
+            // })
+            $('#btn_LiftTranslationRight').click(btn_LiftTranslationRight);
+            
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card mt-3">
+                    <div class="card-header bg-primary text-white">輸入 <br /> <br />
+
+                    </div>
+                    <div class="card-body">
+                        <textarea id="textleft" type="text" class="form-control" placeholder="輸入"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-2 text-center">
+                <br /><br />
+                <button class="btn btn-primary" id="btn_LiftTranslationRight">-></button>
+                <br /><br />
+                
+            </div>
+
+            <div class="col-md-5">
+                <div class="card mt-3">
+                    <div class="card-header bg-primary text-white">回答 <br /><br />
+                        
+                    </div>
+                    <div class="card-body">
+                        <textarea id="textright" type="text" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+
+</html>
