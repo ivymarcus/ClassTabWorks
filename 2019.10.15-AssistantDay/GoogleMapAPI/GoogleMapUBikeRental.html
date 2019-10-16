@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 參考資料 -->
+<!-- https://tutorials.webduino.io/zh-tw/docs/socket/useful/google-map-1.html -->
+<!-- 或 助教pdf檔 -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GoogleMap-U-bike租借數量</title>
+
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+             * element that contains the map. */
+        #map {
+            height: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+
+
+
+
+
+
+
+    <script>
+        var map;
+
+        // function initMap() {
+        //     map = new google.maps.Map(document.getElementById('map'), {
+        //         center: {
+        //             lat: -34.397,
+        //             lng: 150.644
+        //         },
+        //         zoom: 8
+        //     });
+        // }
+
+
+        // 
+        function initMap() {
+            // 經緯度 - 在'億光大樓'
+            // lat 是緯度(latitude)，lng 是經度(longitude)
+            var myLatLng = {
+                lat: 25.0420492,
+                lng: 121.537911
+            };
+
+            // google.maps.Map 的方法定義中心點
+            // zoom 數字越大放越大
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: myLatLng
+            });
+
+            // 標記-定位
+            // Markers : 標記可識別地圖上的位置。
+            // google.maps.Marker : 構造函數採用一個單一的 Marker options對象文本，指定標記的初始性能。
+            // position: (必需)指定LatLng標識標記的初始位置。
+            // map     : (可選)指定Map放置標記的位置。如果未在標記的構造上指定地圖，則會創建標記，但不會將其附加到（或顯示在）地圖上。
+            var marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                title: '億光大樓!'
+            });
+
+
+            // ubike-圖示
+            var icons = {
+                ubike: {
+                    icon: 'image/bike.png'
+                },
+                ubikeBlue: {
+                    icon: 'image/bike_blue.png'
+                },
+            };
+
+            // ubike-圖示 顯示的 "經緯度" 
+            var features = GetUbikeLocation();
+
+
+            // 創建標記/Create markers
+            for (var i = 0; i < features.length; i++) {
+                var marker = new google.maps.Marker({
+                    position: features[i].position,
+                    icon: icons[features[i].type].icon,
+                    map: map,
+                    // 新增顯示項目
+                    title: features[i].title
+                });
+            };
+        }
+
+        // 取得UBike-圖示 顯示的 "經緯度"
+        function GetUbikeLocation() {
+            /* 原有格式(參考)
+            [
+                {
+                position: new google.maps.LatLng(25.0431769, 121.5312098),
+                type: 'ubike'
+                }
+            ]
+            */
+
+            // 一個空集合，放ubike各站資訊
+            var data = [];
+            // 呼叫ubike的OpenData
+            var Opendata = GetOpenData();
+            console.log('Opendata is', Opendata);
+
+            // 顯示每一個item的值
+            $.each(Opendata.retVal, function (i, item) {
+                console.log('i is', i);
+                console.log('item is', item);
+
+                // 把 item(ubike)的所有的經緯度 都放上圖示
+                var singleItem;
+                // 判斷數量有沒有超過10台
+                if (item.sbi > 10) {
+                    singleItem = {
+                        position: new google.maps.LatLng(item.lat, item.lng),
+                        type: 'ubike',
+                        title: '可借:' + item.sbi + '/總計:' + item.tot
+                    };
+                } else {
+                    singleItem = {
+                        position: new google.maps.LatLng(item.lat, item.lng),
+                        type: 'ubikeBlue',
+                        title: item.sbi + '/' + item.tot
+                    };
+                }
+
+
+                // 將資料加入 data集合裡面
+                data.push(singleItem);
+            });
+            return data;
+        }
+
+        // 取得 UBike的OpenData
+        function GetOpenData() {
+            var ubikelocation;
+            // .ajax: 非同步方法
+            $.ajax({
+                type: 'Get',
+                url: 'https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.json',
+                success: function (data) {
+                    ubikelocation = data;
+                    console.log('data is', data);
+                },
+                error: function () {
+                    alert('fall');
+                },
+                //"改為同步方法"，(是否同步)
+                async: false,
+            });
+
+            return ubikelocation;
+        }
+    </script>
+
+    <!-- 下面的 Script是 你的金鑰以及要執行的流程名稱 -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlKWP4uWjQIR3WDAWLAu6rUhBfc3_ppag&callback=initMap"
+        async defer></script>
+
+</body>
+
+</html>
