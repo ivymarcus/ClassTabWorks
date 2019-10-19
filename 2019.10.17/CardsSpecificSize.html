@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>撲克牌比大小</title>
+
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <style>
+        img {
+            border: 10px solid transparent !important;
+            height: 170px;
+            width: 120px;
+            border-radius: 10%;
+        }
+
+        span {
+            text-align: center;
+            font-size: 60px;
+            font-family: Microsoft JhengHei;
+            color: black;
+        }
+
+        .imgs {
+            border-radius: 10%;
+            border: 10px solid orange !important;
+            box-sizing: border-box;
+            box-shadow: orange;
+        }
+
+        /* transition: 再跑(橘色線)卡片，離開時所回復的時間 */
+        .clear {
+            border-radius: 10%;
+            transition: all 1.5s;
+        }
+    </style>
+
+    <script>
+        var PlayCards = ['方塊3.png', 'Joker.png', '黑桃A.png', '紅心K.png', '方塊J.png', '梅花3.png']; //(文字)在picture資料夾，可以使用的牌
+        var Cards = []; //所有牌
+        var Card;
+        var index = 0; //當前選擇的那個牌(在陣列中的index)
+        var times = 0; //跑/剩餘 幾步
+
+        //init
+        $(document).ready(function () {
+            //先hook事件
+            $('#ButtonStart').click(ButtonStart);
+
+            //把頁面上所有Cards放入陣列
+            for (var i = 1; i <= 16; i++) {
+                Card = document.getElementById("i" + i); // 取牌的id (i1、i2、...、i15、i16)
+                if (Card) {
+                    Cards.push(Card); // 放入Cards 陣列 (Cards[] 裡面放的是: img的 "id" )
+                    /*
+                        Cards[1] = img #i1 
+                        Cards[2] = img #i2
+                        ....
+                        Cards[15] = img #i15
+                        Cards[16] = img #i16
+                    */
+                }
+            }
+            console.log(Cards); // 檢查
+
+            //Math.random() 取 0~1之間的亂數
+            //Math.floor() 取最大整數
+            //Cards.length 取Cards陣列的長度
+            //決定從哪個地方開始跑
+            index = Math.floor(Math.random() * Cards.length);
+
+        });
+
+        function ButtonStart() {
+            // 把所有牌設定為背面
+            $('img').prop('src', 'picture/back.png');
+            times = 50; // 設定 跑50次
+
+            // .className 獲取或設置指定元素的class属性的值。
+            Cards[index].className = "imgs";
+            start();
+        }
+
+        function start() {
+            // 將當前index狀態設為一般(未選取)
+            Cards[index].className = "clear"; // 先清除狀態
+            // 跑下一張
+            index++;
+
+            // 如果超出陣列範圍，則歸零
+            if (index > Cards.length - 1) {
+                index = 0;
+            }
+
+            // 將下一張設為選取樣式
+            Cards[index].className = "imgs";
+
+            if (times > 0) {
+                // 倒數幾次的時候翻牌
+                times--;
+                if (times == 5) {
+                    SetupRandomCards();
+                }
+
+                // 100毫秒後清空，再呼叫"start"這個function
+                setTimeout(start, 100);
+            } else {
+                // 如果times == 0
+                // 則表示當前index就是被選取(抽中)的那張牌
+                $('#result').html(Cards[index].data.replace(".png", ""));
+            }
+
+        }
+
+        function SetupRandomCards() {
+            // 亂數放置卡牌
+            for (let i = 0; i < Cards.length; i++) {
+                // 亂數取 PlayCards[] 裡的文字
+                let url = PlayCards[Math.floor(Math.random() * PlayCards.length)];
+                // 設定圖片的位置
+                Cards[i].src = 'picture/' + url;
+                // 設定圖片的名稱為  (自己設定的)data屬性
+                Cards[i].data = url;
+
+                /* Ex. i = 0時
+                    選到 url = "黑桃A.png"
+                    Cards[0].src  = "picture/黑桃A.png"
+                    Cards[0].data = "黑桃A.png"
+
+                */
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row mt-5 text-center">
+            <div class="col-2">
+                <img src='picture/back.png' id="i1" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i2" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i3" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i4" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i5" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i6" alt='' />
+            </div>
+        </div>
+        <div class="row mt-5 text-center">
+            <div class="col-2">
+                <img src='picture/back.png' id="i16" alt='' />
+            </div>
+            <div class="col-8">
+                <span>抽一張比大小</span><br />
+                <span id="result">...</span>
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i7" alt='' />
+            </div>
+        </div>
+        <div class="row mt-5 text-center">
+            <div class="col-2">
+                <img src='picture/back.png' id="i15" alt='' />
+            </div>
+            <div class="col-2">
+            </div>
+            <div class="col-2">
+            </div>
+            <div class="col-2">
+
+            </div>
+            <div class="col-2">
+
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i8" alt='' />
+            </div>
+        </div>
+        <div class="row mt-5 text-center">
+            <div class="col-2">
+                <img src='picture/back.png' id="i14" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i13" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i12" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i11" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i10" alt='' />
+            </div>
+            <div class="col-2">
+                <img src='picture/back.png' id="i9" alt='' />
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <button type="button" name="" id="ButtonStart" class="btn btn-info btn-lg btn-block">
+                    開始
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
