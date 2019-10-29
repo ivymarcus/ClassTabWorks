@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<!-- https://www.darkthread.net/jQuery/Tutorial08/default.htm -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>拼圖遊戲</title>
+
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        /* 外框 */
+        #dvPuzzle {
+            width: 490px;
+            height: 490px;
+            border: solid 5px blue;
+            padding: 0px;
+        }
+
+        .PicCell {
+            /* width: 117.5px; 
+            height: 117.5px; */
+            border-top: solid 1px white;
+            border-left: solid 1px white;
+            border-right: solid 1px gray;
+            border-bottom: solid 1px gray;
+            /* 設定<div>CSS的overflow為hidden並限定width/height，這樣子<div>內<img>尺寸較大超出範圍都會被隱藏 */
+            float: left;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        // 將位置轉成座標的換算表
+        var posConv = {};
+
+        // NxN取值(預設的)
+        var n;
+        var nxn;
+
+        // (勝利的判斷) 取得開始前畫面(拼塊的位置)
+        var endcell = new Array;
+        cells = new Array;
+        var GameVictory = false;
+
+        $(document).ready(function () {
+            //NxN取值(預設的)
+            n = $("#NxN").val();
+            nxn = n * n;
+            PutImage();
+
+            // 變更選單 NxN時
+            $("#NxN").change(NxNChange);
+
+            // 取得開始前 各個拼塊的id
+            RecordPuzzle()
+
+            // 開始鍵 開啟，放棄鍵 關閉
+            $("#BtnStart").attr('disabled',false);
+            $("#Btnquit").attr('disabled',true);
+
+            $(".PicCell").click(ClickPicCell);  // 點選"拼塊"
+            $("#BtnStart").click(BtnStart);     // 點選"開始"
+            $("#Btnquit").click(Btnquit);       // 點選"放棄"
+            
+
+        });
+
+        // 變更NxN時
+        function NxNChange(){
+            // 清空拼圖
+            $("#dvPuzzle").empty()
+            // 取得新切割的大小
+            n = $("#NxN").val();
+            nxn = n * n;
+            console.log("nxn圖形:", n);
+
+            PutImage();                         // 放置圖片
+            RecordPuzzle();                     // 儲存 原始拼塊的id
+            $(".PicCell").click(ClickPicCell);  // 點選"拼塊"
+            $("#BtnStart").click(BtnStart);     // 點選"開始"
+            $("#Btnquit").click(Btnquit);       // 點選"放棄"
+        }
+
+        // 取得開始前 各個拼塊的id
+        function RecordPuzzle() {
+            for (let i = 0; i < nxn; i++) {
+                //取得dvPuzzle div 的 id(Pic0、Pic1、...、Pic15)
+                endcell[i] = $("#dvPuzzle div").eq(i).attr("id")
+            }
+        }
+
+
+        // 將圖片分割放入
+        function PutImage() {
+
+            //填入NxN(16)張圖
+            for (var i = 0; i < nxn; i++) {
+                $("#dvPuzzle").append("<div class='PicCell' id='Pic" + i +
+                    "'><img src='img/puzzle1.png' /></div>"); //id = Pic0、Pic1、...、Pic15
+                var row = parseInt(i / n);
+                var col = i % n;
+                // 各個拼圖的距離
+                // 將margin-top/margin-left設定為負值，就可以自由控制圖檔案顯示的範圍，達到圖片裁切效果
+                $("#Pic" + i + " img").css("margin-left", col * (-480 / n) + 1).css("margin-top", row * (-480 / n) + 1);
+                // 設定拼圖中，各個拼塊的長、寬
+                $(".PicCell").css("width", (480 / n) - 2);
+                $(".PicCell").css("height", (480 / n) - 2);
+                // 也可以這樣寫
+                // $(".PicCell").css("width", (480 / n) -2).css("height", (480 / n) -2);
+
+
+                // 第i個換成第row列第col行
+                posConv[i] = {
+                    row: row,
+                    col: col
+                };
+                /* posConv[i]
+                i=0: {row: 0, col: 0}  i=1: {row: 0, col: 1}  i=2: {row: 0, col: 2}  i=3: {row: 0, col: 3}
+                i=4: {row: 1, col: 0}  i=0: {row: 1, col: 1}  i=0: {row: 1, col: 2}  i=0: {row: 1, col: 3}
+                i=0: {row: 2, col: 0}  i=0: {row: 2, col: 1}  i=0: {row: 2, col: 2}  i=0: {row: 2, col: 3}
+                i=0: {row: 3, col: 0}  i=0: {row: 3, col: 1}  i=0: {row: 3, col: 2}  i=0: {row: 3, col: 3}
+                */
+            }
+            console.log("posConv[]:", posConv);
+            //將左上角圖塊移除
+            $("#Pic0 img").remove();
+        }
+
+
+        // 取得 "點選拼塊位置" 四周相鄰的位置
+        function getNearPos(i) {
+            var pool = []; // 四周相鄰的位置
+            var row = posConv[i].row;
+            var col = posConv[i].col;
+            //  toCheck 用來放入待比對的對象
+            // 上方的Pic
+            if (row > 0) {
+                pool.push((row - 1) * n + col);
+            }
+            // 下方的Pic
+            if (row < n) {
+                pool.push((row + 1) * n + col);
+            }
+            // 左方的Pic
+            if (col > 0) {
+                pool.push(i - 1);
+            }
+            // 右方的Pic
+            if (col < n) {
+                pool.push(i + 1);
+            }
+            console.log("點選拼塊位置四周相鄰的位置", pool)
+            return pool;
+        }
+        // 空白在4，getNearPos方法的 pool[]會取到四周的位置(1,7,3,5)
+        // 空白在8，getNearPos方法的 pool[]會取到四周的位置(5,7)
+        /*
+           0   |   1   |   2
+        -------|-------|-------
+           3   |   4   |   5
+        -------|-------|-------
+           6   |   7   |   8
+        -------|-------|-------
+        */
+
+        // 勝利判斷
+        function GameWin() {
+            for (var i = 0; i < nxn; i++) {
+                cells[i] = $("#dvPuzzle div").eq(i).attr("id");
+                if (cells[i] != endcell[i]) {
+                    break;
+                }
+                if (i == nxn - 1) {
+                    Btnquit()
+                    alert("恭喜完成了")
+                    
+                }
+            }
+        }
+
+
+
+        // 點選拼塊動作 .PicCell
+        function ClickPicCell() {
+            // 找尋 '上下左右' 有沒有 "空白"，有則可以與他交換位置
+            // 首先，先找出點擊的'拼塊' 是元素nxn(0~15)的第幾個
+            var cells = $("#dvPuzzle div");
+            var i = cells.index(this); // 取得點選拼塊位置的編號
+
+            //  toCheck 用來放入待比對的對象，點選拼塊位置 四周 的拼塊編號
+            var toCheck = getNearPos(i);
+            console.log("toCheck", toCheck);
+
+            // 如果陣列裡還有值
+            while (toCheck.length > 0) {
+                // 每次取出 toCheck陣列 最後一個值
+                var j = toCheck.pop();
+                console.log('j:', j);
+                // 若為空白格，則交換位置
+                if (cells.eq(j).attr("id") == "Pic0") {
+                    // 排序，必要時對調，讓i < j
+                    if (i > j) {
+                        var k = j;
+                        j = i;
+                        i = k;
+                    }
+                    var ahead = cells.eq(i);
+                    var behide = cells.eq(j);
+                    // prev(): 是找前一個物件
+                    var behidePrev = behide.prev();
+
+                    // 左右對調
+                    if (Math.abs(i - j) == 1) {
+                        behide.after(ahead);
+                    }
+                    // 上下對調
+                    else {
+                        ahead.after(behide);
+                        behidePrev.after(ahead);
+                    }
+                    if (GameVictory) {
+                        GameWin();
+                    }
+                    break;
+                }
+            }
+        }
+
+        // 開始，打亂拼圖
+        function BtnStart() {
+            // 開始鍵 關閉，放棄鍵 開啟
+            $("#BtnStart").attr('disabled',true);
+            $("#Btnquit").attr('disabled',false);
+            // 選單 關閉
+            $("#NxN").attr('disabled',true);
+            $("#level").attr('disabled',true);
+
+            // 設置用來跳過 在"空格"移動時，會回到原來的樣子，則顯示通關。
+            GameVictory = false;
+
+            var stepCount = $("#level").val()
+
+            // 由"空格"自己移動
+            for (var i = 0; i < stepCount; i++) {
+                var cells = $("#dvPuzzle div");
+                // 找出空格所在位置，並取得其相鄰圖塊
+                var toMove = getNearPos(cells.index($("#Pic0")[0]));
+                // 由空格的相鄰 拼塊移動
+                cells.eq(toMove[parseInt(Math.random() * toMove.length)]).click();
+            }
+            // 因為 空格已經移動完成，則設為true，代表每移動拼塊，就去比對一次
+            GameVictory = true;
+        }
+
+        // 放棄or退出，回到最初 答案
+        function Btnquit() {
+            // 開始鍵 開啟，放棄鍵 關閉
+            $("#BtnStart").attr('disabled',false);
+            $("#Btnquit").attr('disabled',true);
+            // 選單 開啟
+            $("#NxN").attr('disabled',false);
+            $("#level").attr('disabled',false);
+            // 清空拼圖
+            $("#dvPuzzle").empty();
+            // 放置原來圖片
+            PutImage();
+
+            
+            $("#NxN").change(NxNChange);        // 變更選單 NxN時
+            RecordPuzzle();                     // 儲存 原始拼塊的id
+            $(".PicCell").click(ClickPicCell);  // 點選"拼塊"
+            $("#BtnStart").click(BtnStart);     // 點選"開始"
+            $("#Btnquit").click(Btnquit);       // 點選"放棄"
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 mt-3">
+                <h2 style="text-align: center;"><b>拼圖遊戲:</b></h2>
+                <div id="dvPuzzle" class="mt-5"></div>
+
+
+
+            </div>
+            <div class="col-md-3 mt-5">
+                <p style="font-size: 20px;">原始圖:</p>
+                <img src="img/puzzle1.png" width="120px" height="120px">
+                <br /> <br />
+
+                <label><b>請選擇NxN:</b></label>
+                <select class="form-control" name="NxN" id="NxN">
+                    <option value="3">3x3</option>
+                    <option value="4" selected>4x4</option>
+                    <option value="5">5x5</option>
+                </select>
+
+                <label><b>請選擇等級:</b></label>
+                <select class="form-control" name="level" id="level">
+                    <option value="10">簡單</option>
+                    <option value="100" selected>中等</option>
+                    <option value="500">困難</option>
+                </select>
+
+                <button id="BtnStart" class="btn btn-success btn-block mt-5">開始</button>
+                <button id="Btnquit" class="btn btn-success btn-block mt-3">放棄</button>
+            </div>
+
+
+        </div>
+    </div>
+
+
+</body>
+
+</html>
