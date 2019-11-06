@@ -34,11 +34,24 @@
             float: left;
             overflow: hidden;
         }
+
+        #ChangeImg img {
+            cursor: pointer;
+        }
+
+        #ChangeImg img:hover {
+            transform: scale(1.2, 1.2);
+        }
     </style>
 
     <script>
         // 將位置轉成座標的換算表
         var posConv = {};
+
+        // 照片路徑(預設)
+        var ImgSrc = "img/puzzle1.png";
+
+
 
         // NxN取值(預設的)
         var n;
@@ -50,6 +63,9 @@
         var GameVictory = false;
 
         $(document).ready(function () {
+
+            $("#ChangeImg img").click(ChangeImg)
+
             //NxN取值(預設的)
             n = $("#NxN").val();
             nxn = n * n;
@@ -58,22 +74,41 @@
             // 變更選單 NxN時
             $("#NxN").change(NxNChange);
 
+
             // 取得開始前 各個拼塊的id
             RecordPuzzle()
 
             // 開始鍵 開啟，放棄鍵 關閉
-            $("#BtnStart").attr('disabled',false);
-            $("#Btnquit").attr('disabled',true);
+            $("#BtnStart").attr('disabled', false);
+            $("#Btnquit").attr('disabled', true);
 
-            $(".PicCell").click(ClickPicCell);  // 點選"拼塊"
-            $("#BtnStart").click(BtnStart);     // 點選"開始"
-            $("#Btnquit").click(Btnquit);       // 點選"放棄"
-            
+            $(".PicCell").click(ClickPicCell); // 點選"拼塊"
+            $("#BtnStart").click(BtnStart); // 點選"開始"
+            $("#Btnquit").click(Btnquit); // 點選"放棄"
 
         });
 
+        // --------------------------------
+
+        // 更改拼圖的照片
+        function ChangeImg() {
+
+            // 改變 照片的路徑(this 按下照片的那張圖))
+            ImgSrc = $(this).attr("src");
+            // alert(ImgSrc);
+            // 清空拼圖
+            $("#dvPuzzle").empty()
+            PutImage(); // 更改拼圖的照片
+            NxNChange();
+
+            // 更改 原始圖的照片
+            $("#ImgOriginal").attr("src", ImgSrc)
+        }
+
+
+
         // 變更NxN時
-        function NxNChange(){
+        function NxNChange() {
             // 清空拼圖
             $("#dvPuzzle").empty()
             // 取得新切割的大小
@@ -81,11 +116,11 @@
             nxn = n * n;
             console.log("nxn圖形:", n);
 
-            PutImage();                         // 放置圖片
-            RecordPuzzle();                     // 儲存 原始拼塊的id
-            $(".PicCell").click(ClickPicCell);  // 點選"拼塊"
-            $("#BtnStart").click(BtnStart);     // 點選"開始"
-            $("#Btnquit").click(Btnquit);       // 點選"放棄"
+            PutImage(); // 放置圖片
+            RecordPuzzle(); // 儲存 原始拼塊的id
+            $(".PicCell").click(ClickPicCell); // 點選"拼塊"
+            $("#BtnStart").click(BtnStart); // 點選"開始"
+            $("#Btnquit").click(Btnquit); // 點選"放棄"
         }
 
         // 取得開始前 各個拼塊的id
@@ -103,7 +138,7 @@
             //填入NxN(16)張圖
             for (var i = 0; i < nxn; i++) {
                 $("#dvPuzzle").append("<div class='PicCell' id='Pic" + i +
-                    "'><img src='img/puzzle1.png' /></div>"); //id = Pic0、Pic1、...、Pic15
+                    "'><img src='" + ImgSrc + "' /></div>"); //id = Pic0、Pic1、...、Pic15
                 var row = parseInt(i / n);
                 var col = i % n;
                 // 各個拼圖的距離
@@ -180,7 +215,7 @@
                 if (i == nxn - 1) {
                     Btnquit()
                     alert("恭喜完成了")
-                    
+
                 }
             }
         }
@@ -236,16 +271,20 @@
         // 開始，打亂拼圖
         function BtnStart() {
             // 開始鍵 關閉，放棄鍵 開啟
-            $("#BtnStart").attr('disabled',true);
-            $("#Btnquit").attr('disabled',false);
+            $("#BtnStart").attr('disabled', true);
+            $("#Btnquit").attr('disabled', false);
             // 選單 關閉
-            $("#NxN").attr('disabled',true);
-            $("#level").attr('disabled',true);
+            $("#NxN").attr('disabled', true);
+            $("#level").attr('disabled', true);
+            // 照片隱藏(關閉)
+            $("#ChangeImg img").hide();
+
 
             // 設置用來跳過 在"空格"移動時，會回到原來的樣子，則顯示通關。
             GameVictory = false;
 
-            var stepCount = $("#level").val()
+            var stepCount = $("#level").val();
+            console.log("stepCount", stepCount);
 
             // 由"空格"自己移動
             for (var i = 0; i < stepCount; i++) {
@@ -262,32 +301,45 @@
         // 放棄or退出，回到最初 答案
         function Btnquit() {
             // 開始鍵 開啟，放棄鍵 關閉
-            $("#BtnStart").attr('disabled',false);
-            $("#Btnquit").attr('disabled',true);
+            $("#BtnStart").attr('disabled', false);
+            $("#Btnquit").attr('disabled', true);
             // 選單 開啟
-            $("#NxN").attr('disabled',false);
-            $("#level").attr('disabled',false);
+            $("#NxN").attr('disabled', false);
+            $("#level").attr('disabled', false);
+            // 照片顯示(開啟)
+            $("#ChangeImg img").show();
+
+            GameVictory = false;
+
             // 清空拼圖
             $("#dvPuzzle").empty();
             // 放置原來圖片
             PutImage();
 
-            
-            $("#NxN").change(NxNChange);        // 變更選單 NxN時
-            RecordPuzzle();                     // 儲存 原始拼塊的id
-            $(".PicCell").click(ClickPicCell);  // 點選"拼塊"
-            $("#BtnStart").click(BtnStart);     // 點選"開始"
-            $("#Btnquit").click(Btnquit);       // 點選"放棄"
-        }
 
+            $("#NxN").change(NxNChange); // 變更選單 NxN時
+            RecordPuzzle(); // 儲存 原始拼塊的id
+            $(".PicCell").click(ClickPicCell); // 點選"拼塊"
+            $("#BtnStart").click(BtnStart); // 點選"開始"
+            $("#Btnquit").click(Btnquit); // 點選"放棄"
+        }
     </script>
 </head>
 
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-6 mt-3">
+            <div id="ChangeImg" class="col-md-3  mt-5">
+                <p style="font-size: 20px;">可使用照片:</p>
+                <img src="img/puzzle1.png" width="120px" height="120px"> <br />
+                <img src="img/puzzle2.jpg" width="120px" height="120px" class="mt-3"> <br />
+                <img src="img/puzzle3.jpg" width="120px" height="120px" class="mt-3"> <br />
+                <img src="img/puzzle4.jpg" width="120px" height="120px" class="mt-3">
+
+            </div>
+
+
+            <div class="col-md-6 my-5">
                 <h2 style="text-align: center;"><b>拼圖遊戲:</b></h2>
                 <div id="dvPuzzle" class="mt-5"></div>
 
@@ -296,7 +348,7 @@
             </div>
             <div class="col-md-3 mt-5">
                 <p style="font-size: 20px;">原始圖:</p>
-                <img src="img/puzzle1.png" width="120px" height="120px">
+                <img id="ImgOriginal" src="img/puzzle1.png" width="120px" height="120px">
                 <br /> <br />
 
                 <label><b>請選擇NxN:</b></label>
