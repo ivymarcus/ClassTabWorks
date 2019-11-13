@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>行事曆</title>
+
+    <!-- bootstrap 4.3.1 -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+    <style>
+        #calender_body td {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+
+    <script>
+        var today = new Date(); // 取得今天的日期
+        var currentMonth = today.getMonth(); // 當前月份
+        var currentYear = today.getFullYear(); // 當前年份
+
+
+        // 在JavaScript中不能通過直接定義實現多維陣列，那麼該怎麼實現呢？
+
+        // ? = index ， schedule[?][0~2] 代表 有一個儲存 的事件
+        // schedule[?][0] = 日期     (12 <br/>)
+        // schedule[?][1] = ID       (2019-11-12)
+        // schedule[?][2] = 事件     (上課)
+
+        var schedule = new Array(); // 首先定義一維陣列:
+        // schedule[0] = new Array();  // 然後再將一維陣列的成員定義成陣列（之所以可以進行再定義，因為JavaScript是弱型別）
+        // 到此為止，就定義了一個"第一個索引為0"的二維陣列，
+        // 如果想使用 "第一個索引為1" 的二維陣列，在使用前"仍需要定義"。
+        var index = 0; // 記錄當下的 index
+        var currentID = ''; // 記錄當下的 ID
+
+        // var btn;
+
+        $(document).ready(function () {
+            // 載入
+            LoadData()
+
+            // 按鈕 - 上/下個月
+            $("#BtnPrevious").click(BtnPrevious);
+            $("#BtnNext").click(BtnNext);
+
+            // 按鈕(新增) - Modal 視窗
+            $("#BtnModalWindowAdd").click(BtnModalWindowAdd);
+            // Modal(新增) 按鈕 - 新增 
+            $("#Modal_Btn_AddNewData").click(Modal_Btn_AddNewData);
+
+            // 按鈕 - 每個日期(修改/刪除) Modal 視窗
+            $("#calender_body").on('click', 'td', function () {
+                // CurrenEditItem : 紀錄 schedule的事件(有的話)
+                var CurrenEditItem = [];
+
+                for (let i = 0; i < schedule.length; i++) {
+                    if (schedule[i][1] == this.id) {
+                        CurrenEditItem.push(schedule[i][2]);
+                    }
+                }
+
+                //let tdHtml = $(`#${this.id}`);
+                //console.log("tdHtml", tdHtml);
+                console.log("this.id", this.id);
+                // console.log("index", index);
+                console.log("CurrenEditItem", CurrenEditItem);
+
+                // 顯示 Modal 視窗
+                $('#Modal_ModifyDeleteWindows').modal();
+                $('#Modal_EditDate').val(this.id);
+                $('#Modal_EditItem').val(CurrenEditItem);
+            });
+
+
+            // Modal(日期 修改/刪除) 按鈕 - "修改"
+            $("#Modal_Btn_Update").click(Modal_Btn_Update);
+
+            // Modal(日期 修改/刪除) 按鈕 - "刪除"
+            $("#Modal_Btn_Delete").click(Modal_Btn_Delete);
+
+
+
+        });
+
+        // 儲存資料
+        function SaveData() {
+            // 序列化，轉成字串格式，保存起來 (若不保存，下一次執行時會被清空，只有預設資料dat)
+            var str = JSON.stringify(schedule);
+            localStorage.setItem('Calendar', str);
+            console.log("str", str);
+        }
+
+        // 載入資料
+        function LoadData() {
+            if (localStorage.getItem('Calendar') != null) {
+                var str = localStorage.getItem('Calendar');
+                // 取回資料(反序列化，json的格式)
+                schedule = JSON.parse(str);
+            }
+
+            //schedule.length = 0;      // 清空陣列(若有陣列裡有null值 或 其他原因)(執行完後 再註解 -> 存檔 即可)
+            index = schedule.length;
+            console.log("index:", index);
+            console.log("schedule", schedule);
+            // 更新資料(若第一次執行，則只有"一般日曆")
+            GetCalender(currentMonth, currentYear);
+        }
+
+        // 製作月曆表格(更新資料)
+        function GetCalender(month, year) {
+            // 設定當前的月、年
+            $("#Month").text(month + 1 + "月");
+            $("#Year").text(year + "年");
+
+            var firstDay = (new Date(year, month)).getDay(); // 當月 1號是 "星期幾" 
+            var daysInMonth = 32 - new Date(year, month, 32).getDate(); // 當前 年/月 的最後一天 (30/31)
+            var table = document.getElementById("calender_body");
+            // console.log("firstDay", firstDay);
+            // console.log("daysInMonth",daysInMonth)
+
+
+            // 清空(Clear)
+            table.innerHTML = "";
+
+
+            // 創建表格(Draw)
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                // 創建 table 的 row (6週，因為如果 當月有31天 且 第一天在"星期六"，會有6週)
+                let row = document.createElement("tr");
+
+                // 創建 table 的 col 單元格(天數) (一週有七天)
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDay) {
+                        let cell = document.createElement("td");
+                        let cellText = document.createTextNode("");
+                        cell.appendChild(cellText);
+                        row.appendChild(cell);
+                    } //
+                    else if (date > daysInMonth) {
+                        break;
+                    } //
+                    else {
+                        let cell = document.createElement("td");
+                        //let cellText = document.createTextNode(date);
+                        cell.innerHTML = date + '<br/>';
+                        cell.id = `${year}-${month + 1}-${date}`;
+                        let Id = cell.id;
+
+
+                        // 在今日放顏色
+                        if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                            cell.classList.add("bg-primary");
+                        }
+
+                        //cell.appendChild(cellText);
+                        row.appendChild(cell);
+                        date++;
+                    }
+                }
+                // 真正 將表格放入 html
+                table.appendChild(row);
+            }
+
+
+            // 放入行程schedule[][]
+            for (let i = 0; i < schedule.length; i++) {
+                let Id = schedule[i][1];
+                let Item = schedule[i][2];
+                Data_Add(Id, Item);
+            }
+        }
+
+
+        // --------------------------------------------------------------------------------------------
+
+
+        // 按鈕 - 下個月
+        function BtnNext() {
+            // 12月時
+            if (currentMonth === 11) {
+                currentYear += 1; // 年份 加一
+                currentMonth = 0; // 月份 為 01 月
+            } else {
+                currentMonth += 1;
+            }
+
+            GetCalender(currentMonth, currentYear);
+        }
+
+
+        // 按鈕 - 上個月
+        function BtnPrevious() {
+            // 12月時
+            if (currentMonth === 0) {
+                currentYear -= 1; // 年份 減一
+                currentMonth = 11; // 月份 為 12 月
+            } else {
+                currentMonth -= 1;
+            }
+
+            GetCalender(currentMonth, currentYear);
+        }
+
+        // --------------------------------------------------------------------------------------------
+
+        // 將事項 加入日期
+        function Data_Add(thisID, thisNewItem) {
+            $(`#${thisID}`).append(`${thisNewItem}`);
+        }
+
+
+        // 按鈕(新增) - 顯示 Modal 視窗
+        function BtnModalWindowAdd() {
+            // 顯示 Modal 視窗
+            $('#Modal_AddNewDataWindows').modal();
+        }
+
+
+        // Modal(新增) 按鈕 - 新增
+        function Modal_Btn_AddNewData() {
+            var date = new Date($('#Modal_NewDate').val()); // 取得 指定日期
+            var thisYear = date.getFullYear();
+            var thisMonth = date.getMonth();
+            var thisDay = date.getDate();
+            var thisID = `${thisYear}-${thisMonth + 1}-${thisDay}`; // 取得 對應日期的 ID
+            var thisNewItem = $('#Modal_NewItem').val(); // 取得 事項內容
+            console.log("Modal_date:", date);
+            console.log("Modal_thisID", thisID);
+            console.log("thisNewItem", thisNewItem);
+            // console.log("schedule.length", schedule.length);
+
+
+            var count = 0;
+            // 新增時，schedule[][1](Id) "就存在時"，更改 schedule[][2](事件)
+            for (let i = 0; i < schedule.length; i++) {
+                if (schedule[i][1] == thisID) {
+                    let saveitems = schedule[i][2]; // 先將先前事件存起來
+                    let newitems = $('#Modal_NewItem').val(); // 儲存 新事件
+                    schedule[i][2] = saveitems + newitems;
+
+                    $(`#${thisID}`).html(''); // 將 此ID的 html 清空 
+
+                    let tdHtml = schedule[i][0] + schedule[i][2];
+                    console.log("tdHtml220", tdHtml);
+                    $(`#${thisID}`).html(tdHtml);
+                } //
+                else {
+                    count++;
+                }
+            }
+
+            // count == schedule.length => 新增時，schedule[][1](Id) "不存在時"
+            // 將 日期的 ID 和 事項內容 加入 "schedule 陣列"
+            // 然後再將一維陣列的成員定義成陣列（之所以可以進行再定義，因為JavaScript是弱型別）
+            if (count == schedule.length) {
+                schedule[index] = new Array();
+                schedule[index][0] = $(`#${thisID}`).html(); // 當天日期 (有<br/>)
+                schedule[index][1] = thisID; // ID
+                schedule[index][2] = thisNewItem; // 事件
+                index++;
+
+                // 加入
+                Data_Add(thisID, thisNewItem);
+            }
+
+            console.log("schedule[]:", schedule);
+
+            // 欄位清空
+            $("#Modal_NewDate").val('');
+            $('#Modal_NewItem').val('');
+
+            // 儲存資料
+            SaveData();
+            // 載入資料
+            LoadData();
+
+        }
+
+
+        // --------------------------------------------------------------------------------------------
+
+
+        // Modal(日期 修改/刪除) 按鈕 - "修改"
+        function Modal_Btn_Update() {
+            //var UpdateItem = [$('#Modal_EditDate').val(), $('#Modal_EditItem').val()]; // 取的 "日期" 和 "新的事項"
+            let EditID = $('#Modal_EditDate').val();
+            let EditItem = $('#Modal_EditItem').val(); // 編輯(更新) 的事件
+
+            let Day;
+            let saveI; // 儲存 i的值
+
+            var pause = false;
+            var count = 0;
+            while (!pause) {
+                // 當 schedule 沒有行程時
+                if (schedule.length == 0) {
+                    schedule[index] = new Array();
+                    schedule[index][0] = $(`#${EditID}`).html();
+                    schedule[index][1] = EditID;
+                    schedule[index][2] = EditItem;
+                    //console.log("scheduleTest",schedule);
+
+                    Data_Add(schedule[index][1], schedule[index][2]);
+                    //index++;
+                    //pause = true;
+                    break;
+                }
+
+                // 當 schedule 有行程時(裡面有值)
+                //console.log("schedule.length",schedule.length);
+                for (let i = 0; i < schedule.length; i++) {
+                    // var count = 0;
+                    if (schedule[i][1] == EditID) {
+                        saveI = i;
+                        Day = schedule[i][0];
+
+                        $(`#${EditID}`).html(''); // 將 此ID的 html 清空 
+
+                        let tdHtml = Day + $('#Modal_EditItem').val();
+                        $(`#${EditID}`).html(tdHtml);
+                        schedule[saveI][2] = $('#Modal_EditItem').val(); // 更改 schedule[?][2] 事件
+                        console.log("tdHtml:", tdHtml);
+
+                        pause = true;
+                        //break;
+                    } //
+                    else {
+                        count++;
+                    }
+
+
+                }
+
+                // 當 schedule 有行程時，要 修改(新增) 事件時。 
+                // 如果 count == schedule.length => 代表 schedule[i][1] 裡沒有ID
+                console.log("schedule.length", schedule.length);
+                console.log("count", count);
+                if (count == schedule.length) {
+                    schedule[index] = new Array();
+                    schedule[index][0] = $(`#${EditID}`).html(); // 當天日期
+                    schedule[index][1] = EditID; // ID
+                    schedule[index][2] = EditItem; // 事件
+                    //console.log("scheduleTest2", schedule);
+                    Data_Add(schedule[index][1], schedule[index][2]);
+                    //index++;
+                    pause = true;
+                    //break;
+                }
+
+            }
+            // 儲存資料
+            SaveData();
+            // 載入資料
+            LoadData();
+
+        }
+
+        // Modal(日期 修改/刪除) 按鈕 - "刪除"
+        function Modal_Btn_Delete() {
+            let EditID = $('#Modal_EditDate').val();
+
+            let Day;
+            let saveI; // 儲存 i的值
+            for (let i = 0; i < schedule.length; i++) {
+                if (schedule[i][1] == EditID) {
+                    saveI = i;
+                    Day = schedule[i][0];
+
+                    $(`#${EditID}`).html(''); // 將 此ID的 html 清空 
+                    $(`#${EditID}`).html(Day); // 把日期擺進去
+                    schedule[saveI][2] = ""; // 更改 schedule[?][2] 為空
+                }
+            }
+
+            // 儲存資料
+            SaveData();
+            // 載入資料
+            LoadData();
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="mx-3" style="height: 15px; background-color: cyan;"></div>
+        <div class="row mt-1 mx-3" style="background-color:cornflowerblue;" role="alert">
+            <div class="col-2">
+                <button id="BtnPrevious" class="btn btn-outline-secondary mt-3 ml-4" style="border: 0px; color: black;">
+                    &#060;
+                    <!-- < -->
+                </button>
+            </div>
+            <div class="col-8">
+                <span class="text-center">
+                    <h3 id="Month">Month</h3>
+                    <h6 id="Year">Year</h6>
+                </span>
+            </div>
+
+            <div class="col-1">
+                <button id="BtnModalWindowAdd" class="btn btn-success mt-3">新增</button>
+            </div>
+
+            <div class="col-1">
+                <button id="BtnNext" class="btn btn-outline-secondary mt-3 ml-4" style="border: 0px; color: black;">
+                    &#062;
+                    <!-- > -->
+                </button>
+            </div>
+
+        </div>
+
+        <div class="row mx-1 text-center" style="color: darkcyan;">
+            <div class="col">
+                <table class="table table-bordered" id="calender">
+                    <tr>
+                        <th>星期日</th>
+                        <th>星期一</th>
+                        <th>星期二</th>
+                        <th>星期三</th>
+                        <th>星期四</th>
+                        <th>星期五</th>
+                        <th>星期六</th>
+                    </tr>
+                    <tbody id="calender_body">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal - 新增 -->
+    <div class="modal fade" id="Modal_AddNewDataWindows" tabindex="-1" , role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">新增事項</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label>日期:</label>
+                            <input type="date" class="form-control" id="Modal_NewDate">
+                        </div>
+                        <div class="form-group">
+                            <label>事項:</label>
+                            <input type="textarea" class="form-control" id="Modal_NewItem" placeholder="請輸入事項">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" id="Modal_Btn_AddNewData" class="btn btn-success">新增</button>
+                    <button class="btn btn-danger" data-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal - 日期/表格 -->
+    <div class="modal fade" id="Modal_ModifyDeleteWindows">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">修改/刪除</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form>
+                        <label>日期:</label>
+                        <input type="text" class="form-control" id="Modal_EditDate" readonly>
+                        <!-- &lt;br/&gt; => <br/> -->
+                        <label>事項:</label>
+                        <input type="textarea" class="form-control" id="Modal_EditItem">
+                    </form>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button id="Modal_Btn_Update" class="btn btn-success" data-dismiss="modal">儲存</button>
+                    <button id="Modal_Btn_Delete" class="btn btn-danger" data-dismiss="modal">刪除</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+
+</html>
